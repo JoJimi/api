@@ -1,12 +1,16 @@
 package org.example.board.model.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @Entity
 @Table(name = "post")
+@SQLDelete(sql = "UPDATE \"post\" SET deleteddatetime = CURRENT_TIMESTAMP WHERE postid = ?")
+@SQLRestriction("deleteddatetime IS NULL")
 public class PostEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,5 +79,16 @@ public class PostEntity {
     @Override
     public int hashCode() {
         return Objects.hash(getPostId(), getBody(), getCreatedDateTime(), getUpdatedDateTime(), getDeletedDateTime());
+    }
+
+    @PrePersist
+    private void prePersist(){
+        this.createdDateTime = ZonedDateTime.now();
+        this.updatedDateTime = ZonedDateTime.now();
+    }
+
+    @PreUpdate
+    private void preUpdate(){
+        this.updatedDateTime = ZonedDateTime.now();
     }
 }
