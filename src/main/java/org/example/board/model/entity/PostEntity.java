@@ -8,7 +8,8 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "post")
+@Table(name = "post",
+indexes = {@Index(name = "post_userid_idx", columnList = "userid")})
 @SQLDelete(sql = "UPDATE \"post\" SET deleteddatetime = CURRENT_TIMESTAMP WHERE postid = ?")
 @SQLRestriction("deleteddatetime IS NULL")
 public class PostEntity {
@@ -27,6 +28,10 @@ public class PostEntity {
 
     @Column
     private ZonedDateTime deletedDateTime;
+
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private UserEntity user;
 
     public Long getPostId() {
         return postId;
@@ -68,17 +73,32 @@ public class PostEntity {
         this.deletedDateTime = deletedDateTime;
     }
 
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PostEntity that = (PostEntity) o;
-        return Objects.equals(getPostId(), that.getPostId()) && Objects.equals(getBody(), that.getBody()) && Objects.equals(getCreatedDateTime(), that.getCreatedDateTime()) && Objects.equals(getUpdatedDateTime(), that.getUpdatedDateTime()) && Objects.equals(getDeletedDateTime(), that.getDeletedDateTime());
+        return Objects.equals(getPostId(), that.getPostId()) && Objects.equals(getBody(), that.getBody()) && Objects.equals(getCreatedDateTime(), that.getCreatedDateTime()) && Objects.equals(getUpdatedDateTime(), that.getUpdatedDateTime()) && Objects.equals(getDeletedDateTime(), that.getDeletedDateTime()) && Objects.equals(getUser(), that.getUser());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getPostId(), getBody(), getCreatedDateTime(), getUpdatedDateTime(), getDeletedDateTime());
+        return Objects.hash(getPostId(), getBody(), getCreatedDateTime(), getUpdatedDateTime(), getDeletedDateTime(), getUser());
+    }
+
+    public static PostEntity of(String body, UserEntity user){
+        var post = new PostEntity();
+        post.setBody(body);
+        post.setUser(user);
+        return post;
     }
 
     @PrePersist
