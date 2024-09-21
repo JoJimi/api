@@ -1,19 +1,15 @@
 package org.example.board.service;
 
 import org.example.board.exception.post.PostNotFoundException;
-import org.example.board.model.Post;
-import org.example.board.model.PostPatchRequestBody;
-import org.example.board.model.PostPostRequestBody;
+import org.example.board.model.post.Post;
+import org.example.board.model.post.PostPatchRequestBody;
+import org.example.board.model.post.PostPostRequestBody;
 import org.example.board.model.entity.PostEntity;
 import org.example.board.repository.PostEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service

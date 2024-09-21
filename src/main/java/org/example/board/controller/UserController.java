@@ -2,6 +2,8 @@ package org.example.board.controller;
 
 import jakarta.validation.Valid;
 import org.example.board.model.user.User;
+import org.example.board.model.user.UserAuthenticationResponse;
+import org.example.board.model.user.UserLoginRequestBody;
 import org.example.board.model.user.UserSignUpRequestBody;
 import org.example.board.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,12 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-
+    @PostMapping("/authenticate")
+    public ResponseEntity<UserAuthenticationResponse> authenticate(
+            @Valid @RequestBody UserLoginRequestBody userLoginRequestBody){
+        var response =
+                userService.authenticate(userLoginRequestBody.username(), userLoginRequestBody.password());
+        return ResponseEntity.ok(response);
+    }
 
 }

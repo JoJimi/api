@@ -34,4 +34,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 new ClientErrorResponse(HttpStatus.BAD_REQUEST, errorMessage), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ClientErrorResponse>handleClientErrorException(RuntimeException e){
+        return ResponseEntity.internalServerError().build();
+    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ClientErrorResponse>handleClientErrorException(Exception e){
+        return ResponseEntity.internalServerError().build();
+    }
 }

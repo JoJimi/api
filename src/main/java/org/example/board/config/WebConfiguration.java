@@ -37,7 +37,9 @@ public class WebConfiguration {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(Customizer.withDefaults())
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.POST, "/api/*/users")
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/*/users",
+                                "/api/*/users/authenticate")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
