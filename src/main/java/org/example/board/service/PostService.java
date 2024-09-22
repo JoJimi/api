@@ -26,20 +26,28 @@ public class PostService {
     @Autowired private UserEntityRepository userEntityRepository;
     @Autowired private LikeEntityRepository likeEntityRepository;
 
-    public List<Post> getPosts(){
+    public List<Post> getPosts(UserEntity currentUser){
         var postEntities = postEntityRepository.findAll();
-        return postEntities.stream().map(Post::from).toList();
+        return postEntities.stream().map(
+                postEntity -> getPostWithLikingStatus(postEntity, currentUser))
+                .toList();
     }
 
-    public Post getPostByPostId(Long postId){
+    public Post getPostByPostId(Long postId, UserEntity currentUser){
         var postEntity = postEntityRepository
                 .findById(postId)
                 .orElseThrow(
                         () -> new PostNotFoundException(postId));
-
-        return Post.from(postEntity);
+        return getPostWithLikingStatus(postEntity, currentUser);
     }
 
+    private Post getPostWithLikingStatus(PostEntity postEntity, UserEntity currentUser){
+        var isLiking = likeEntityRepository
+                .findByUserAndPost(currentUser, postEntity)
+                .isPresent();
+
+        return Post.from(postEntity, isLiking);
+    }
 
     public Post createPost(PostPostRequestBody postPostRequestBody, UserEntity currentUser) {
         var postEntity = postEntityRepository.save(
@@ -78,13 +86,15 @@ public class PostService {
         postEntityRepository.delete(postEntity);
     }
 
-    public List<Post> getPostByUsername(String username) {
+    public List<Post> getPostByUsername(String username, UserEntity currentUser) {
         var userEntity = userEntityRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
 
         var postEntities = postEntityRepository.findByUser(userEntity);
-        return postEntities.stream().map(Post::from).toList();
+        return postEntities.stream().map(
+                postEntity -> getPostWithLikingStatus(postEntity, currentUser))
+                .toList();
     }
 
     @Transactional
@@ -99,10 +109,11 @@ public class PostService {
         if(likeEntity.isPresent()){
             likeEntityRepository.delete(likeEntity.get());
             postEntity.setLikesCount(Math.max(0, postEntity.getLikesCount() - 1));
+            return Post.from(postEntityRepository.save(postEntity), false);
         }else{
             likeEntityRepository.save(LikeEntity.of(currentUser, postEntity));
             postEntity.setLikesCount(postEntity.getLikesCount() + 1);
+            return Post.from(postEntityRepository.save(postEntity), true);
         }
-        return Post.from(postEntityRepository.save(postEntity));
     }
 }

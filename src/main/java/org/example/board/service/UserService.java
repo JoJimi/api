@@ -132,27 +132,27 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public User unFollow(String username, UserEntity currentUser) {
-        var follower = userEntityRepository
+        var following = userEntityRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
 
-        if(follower.equals(currentUser)){
+        if(following.equals(currentUser)){
             throw new InvalidFollowException("A user cannot unfollow themselves.");
         }
 
         var followEntity = followEntityRepository.
-                findByFollowerAndFollowing(currentUser, follower)
+                findByFollowerAndFollowing(currentUser, following)
                 .orElseThrow(
-                        () -> new FollowNotFoundException(currentUser, follower));
+                        () -> new FollowNotFoundException(currentUser, following));
 
         followEntityRepository.delete(followEntity);
 
-        follower.setFollowersCount(Math.max(0, follower.getFollowersCount() - 1));
+        following.setFollowersCount(Math.max(0, following.getFollowersCount() - 1));
         currentUser.setFollowingsCount(Math.max(0, currentUser.getFollowingsCount() + 1));
 
-        userEntityRepository.saveAll(List.of(follower, currentUser));
+        userEntityRepository.saveAll(List.of(following, currentUser));
 
-        return User.from(follower);
+        return User.from(following);
     }
 
     public List<User> getFollowersByUsername(String username) {
