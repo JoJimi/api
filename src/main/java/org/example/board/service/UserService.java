@@ -8,6 +8,7 @@ import org.example.board.exception.user.UserNotAllowedException;
 import org.example.board.exception.user.UserNotFoundException;
 import org.example.board.model.entity.FollowEntity;
 import org.example.board.model.entity.UserEntity;
+import org.example.board.model.user.Followers;
 import org.example.board.model.user.User;
 import org.example.board.model.user.UserAuthenticationResponse;
 import org.example.board.model.user.UserPatchRequestBody;
@@ -166,7 +167,7 @@ public class UserService implements UserDetailsService {
         return User.from(following, false);
     }
 
-    public List<User> getFollowersByUsername(String username, UserEntity currentUser) {
+    public List<Followers> getFollowersByUsername(String username, UserEntity currentUser) {
         var following = userEntityRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
@@ -174,7 +175,10 @@ public class UserService implements UserDetailsService {
         var followEntities = followEntityRepository.findByFollowing(following);
 
         return followEntities.stream()
-                .map(follow -> getUserWithFollowingStatus(follow.getFollower(), currentUser))
+                .map(follow -> Followers.from(
+                        getUserWithFollowingStatus(follow.getFollower(), currentUser),
+                        follow.getCreatedDateTime()
+                ))
                 .toList();
     }
 

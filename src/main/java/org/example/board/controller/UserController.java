@@ -70,7 +70,7 @@ public class UserController {
     }
 
     @GetMapping("/{username}/followers")
-    public ResponseEntity<List<User>> getFollowersByUser(
+    public ResponseEntity<List<Followers>> getFollowersByUser(
             @PathVariable String username, Authentication authentication){
         var followers = userService.getFollowersByUsername(username, (UserEntity)authentication.getPrincipal());
         return ResponseEntity.ok(followers);
