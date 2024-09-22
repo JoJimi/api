@@ -3,8 +3,10 @@ package org.example.board.controller;
 import jakarta.validation.Valid;
 import org.example.board.model.entity.UserEntity;
 import org.example.board.model.post.Post;
+import org.example.board.model.reply.Reply;
 import org.example.board.model.user.*;
 import org.example.board.service.PostService;
+import org.example.board.service.ReplyService;
 import org.example.board.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import static org.apache.coyote.http11.Constants.a;
 public class UserController {
     @Autowired UserService userService;
     @Autowired PostService postService;
+    @Autowired ReplyService replyService;
 
     @GetMapping
     public ResponseEntity<List<User>> getUsers(
@@ -78,6 +81,13 @@ public class UserController {
             @PathVariable String username, Authentication authentication){
         var followings = userService.getFollowingsByUsername(username, (UserEntity)authentication.getPrincipal());
         return ResponseEntity.ok(followings);
+    }
+
+    @GetMapping("/{username}/replies")
+    public ResponseEntity<List<Reply>> getRepliesByUser(
+            @PathVariable String username){
+        var replies = replyService.getRepliesByUser(username);
+        return ResponseEntity.ok(replies);
     }
 
     @PostMapping
