@@ -59,8 +59,22 @@ public class UserController {
     @DeleteMapping("/{username}/follows")
     public ResponseEntity<User> unfollow(
             @PathVariable String username, Authentication authentication){
-        var user = userService.unfollow(username, (UserEntity)authentication.getPrincipal());
+        var user = userService.unFollow(username, (UserEntity)authentication.getPrincipal());
         return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/{username}/followers")
+    public ResponseEntity<List<User>> getFollowersByUser(
+            @PathVariable String username){
+        var followers = userService.getFollowersByUsername(username);
+        return ResponseEntity.ok(followers);
+    }
+
+    @GetMapping("/{username}/followings")
+    public ResponseEntity<List<User>> getFollowingsByUser(
+            @PathVariable String username){
+        var followings = userService.getFollowingsByUsername(username);
+        return ResponseEntity.ok(followings);
     }
 
     @PostMapping

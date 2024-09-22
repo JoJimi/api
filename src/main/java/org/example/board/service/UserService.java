@@ -131,7 +131,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User unfollow(String username, UserEntity currentUser) {
+    public User unFollow(String username, UserEntity currentUser) {
         var follower = userEntityRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
@@ -154,4 +154,25 @@ public class UserService implements UserDetailsService {
 
         return User.from(follower);
     }
+
+    public List<User> getFollowersByUsername(String username) {
+        var following = userEntityRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+
+        var followEntities = followEntityRepository.findByFollowing(following);
+
+        return followEntities.stream().map(follow -> User.from(follow.getFollower())).toList();
+    }
+
+    public List<User> getFollowingsByUsername(String username) {
+        var follower = userEntityRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+
+        var followEntities = followEntityRepository.findByFollowing(follower);
+
+        return followEntities.stream().map(follow -> User.from(follow.getFollowing())).toList();
+    }
+
 }
