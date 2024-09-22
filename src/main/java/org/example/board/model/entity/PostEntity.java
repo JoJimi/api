@@ -24,6 +24,9 @@ public class PostEntity {
     private Long repliesCount = 0L;
 
     @Column
+    private Long likesCount = 0L;
+
+    @Column
     private ZonedDateTime createdDateTime;
 
     @Column
@@ -58,6 +61,14 @@ public class PostEntity {
 
     public void setRepliesCount(Long repliesCount) {
         this.repliesCount = repliesCount;
+    }
+
+    public Long getLikesCount() {
+        return likesCount;
+    }
+
+    public void setLikesCount(Long likesCount) {
+        this.likesCount = likesCount;
     }
 
     public ZonedDateTime getCreatedDateTime() {
@@ -97,12 +108,12 @@ public class PostEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PostEntity that = (PostEntity) o;
-        return Objects.equals(getPostId(), that.getPostId()) && Objects.equals(getBody(), that.getBody()) && Objects.equals(getRepliesCount(), that.getRepliesCount()) && Objects.equals(getCreatedDateTime(), that.getCreatedDateTime()) && Objects.equals(getUpdatedDateTime(), that.getUpdatedDateTime()) && Objects.equals(getDeletedDateTime(), that.getDeletedDateTime()) && Objects.equals(getUser(), that.getUser());
+        return Objects.equals(getPostId(), that.getPostId()) && Objects.equals(getBody(), that.getBody()) && Objects.equals(getRepliesCount(), that.getRepliesCount()) && Objects.equals(getLikesCount(), that.getLikesCount()) && Objects.equals(getCreatedDateTime(), that.getCreatedDateTime()) && Objects.equals(getUpdatedDateTime(), that.getUpdatedDateTime()) && Objects.equals(getDeletedDateTime(), that.getDeletedDateTime()) && Objects.equals(getUser(), that.getUser());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getPostId(), getBody(), getRepliesCount(), getCreatedDateTime(), getUpdatedDateTime(), getDeletedDateTime(), getUser());
+        return Objects.hash(getPostId(), getBody(), getRepliesCount(), getLikesCount(), getCreatedDateTime(), getUpdatedDateTime(), getDeletedDateTime(), getUser());
     }
 
     public static PostEntity of(String body, UserEntity user){

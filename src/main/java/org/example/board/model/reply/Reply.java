@@ -1,7 +1,6 @@
 package org.example.board.model.reply;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.example.board.model.entity.PostEntity;
 import org.example.board.model.entity.ReplyEntity;
 import org.example.board.model.post.Post;
 import org.example.board.model.user.User;

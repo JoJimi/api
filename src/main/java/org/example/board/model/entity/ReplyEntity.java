@@ -9,13 +9,14 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "reply",
-indexes = {@Index(name = "reply_userid_idx", columnList = "userid"),
-        @Index(name = "reply_postid_idx", columnList = "postid")})
+        indexes = {@Index(name = "reply_userid_idx", columnList = "userid"),
+                @Index(name = "reply_postid_idx", columnList = "postid")})
 @SQLDelete(sql = "UPDATE \"reply\" SET deleteddatetime = CURRENT_TIMESTAMP WHERE replyid = ?")
 @SQLRestriction("deleteddatetime IS NULL")
 public class ReplyEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long replyId;
 
     @Column(columnDefinition = "TEXT")
