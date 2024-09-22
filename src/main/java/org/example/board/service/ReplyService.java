@@ -95,7 +95,5 @@ public class ReplyService {
 
         var replyEntities = replyEntityRepository.findByUser(userEntity);
         return replyEntities.stream().map(Reply::from).toList();
-
-
     }
 }
