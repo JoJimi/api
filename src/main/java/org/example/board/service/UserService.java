@@ -3,16 +3,18 @@ package org.example.board.service;
 import org.example.board.exception.follow.FollowAlreadyExistsException;
 import org.example.board.exception.follow.FollowNotFoundException;
 import org.example.board.exception.follow.InvalidFollowException;
+import org.example.board.exception.post.PostNotFoundException;
 import org.example.board.exception.user.UserAlreadyExistsException;
 import org.example.board.exception.user.UserNotAllowedException;
 import org.example.board.exception.user.UserNotFoundException;
 import org.example.board.model.entity.FollowEntity;
+import org.example.board.model.entity.LikeEntity;
+import org.example.board.model.entity.PostEntity;
 import org.example.board.model.entity.UserEntity;
-import org.example.board.model.user.Followers;
-import org.example.board.model.user.User;
-import org.example.board.model.user.UserAuthenticationResponse;
-import org.example.board.model.user.UserPatchRequestBody;
+import org.example.board.model.user.*;
 import org.example.board.repository.FollowEntityRepository;
+import org.example.board.repository.LikeEntityRepository;
+import org.example.board.repository.PostEntityRepository;
 import org.example.board.repository.UserEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,13 +26,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class UserService implements UserDetailsService {
 
     @Autowired private UserEntityRepository userEntityRepository;
     @Autowired private BCryptPasswordEncoder passwordEncoder;
     @Autowired private JwtService jwtService;
+    @Autowired private PostEntityRepository postEntityRepository;
     @Autowired private FollowEntityRepository followEntityRepository;
+    @Autowired private LikeEntityRepository likeEntityRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -194,4 +200,43 @@ public class UserService implements UserDetailsService {
                 .toList();
     }
 
+    public List<LikedUser> getLikedUsersByPostId(Long postId, UserEntity currentUser) {
+        var postEntity = postEntityRepository
+                .findById(postId)
+                .orElseThrow(
+                        () -> new PostNotFoundException(postId));
+
+        var likedEntities = likeEntityRepository.findByPost(postEntity);
+        return likedEntities.stream().map(
+                likeEntity -> getLikedUserWithFollowingStatus(likeEntity, postEntity, currentUser))
+                .toList();
+    }
+    private LikedUser getLikedUserWithFollowingStatus(
+            LikeEntity likeEntity, PostEntity postEntity, UserEntity currentUser){
+        var likedUserEntity = likeEntity.getUser();
+        var userWithFollowingStatus =
+                getUserWithFollowingStatus(likedUserEntity, currentUser);
+        return LikedUser.from(
+                userWithFollowingStatus,
+                postEntity.getPostId(),
+                likeEntity.getCreatedDateTime());
+    }
+
+    public List<LikedUser> getLikedUsersByUser(String username, UserEntity currentUser) {
+        var userEntity = userEntityRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+
+        var postEntities = postEntityRepository.findByUser(userEntity);
+        return postEntities
+                .stream()
+                .flatMap(postEntity -> {
+            var likedEntities = likeEntityRepository.findByPost(postEntity);
+            return likedEntities
+                    .stream()
+                    .map(
+                            likeEntity -> getLikedUserWithFollowingStatus(likeEntity, postEntity, currentUser));
+
+        }).toList();
+    }
 }

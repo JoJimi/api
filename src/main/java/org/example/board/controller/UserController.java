@@ -90,6 +90,13 @@ public class UserController {
         return ResponseEntity.ok(replies);
     }
 
+    @GetMapping("/{username}/liked-users")
+    public ResponseEntity<List<LikedUser>> getLikedUsersByUser(
+            @PathVariable String username, Authentication authentication){
+        var likedUsers = userService.getLikedUsersByUser(username, (UserEntity)authentication.getPrincipal());
+        return ResponseEntity.ok(likedUsers);
+    }
+
     @PostMapping
     public ResponseEntity<User> signUp(
             @Valid @RequestBody UserSignUpRequestBody userSignUpRequestBody){
