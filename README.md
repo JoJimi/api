@@ -1,3 +1,3 @@
-# JWT, RestAPI, exception 연습하면서 SNS 만들어보기
+# JWT, RestAPI, Exception 연습하면서 SNS 만들어보기
 
-게시물, 댓글, 좋아요, 팔로우 .. 등등
+로그인, 회원가, 게시물, 댓글, 좋아요, 팔로우
