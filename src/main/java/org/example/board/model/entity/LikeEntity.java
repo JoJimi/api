@@ -1,14 +1,12 @@
 package org.example.board.model.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "like",
+@Table(name = "\"like\"",
 indexes = {@Index(name = "like_userid_postid_idx", columnList = "userid, postid", unique = true)})
 public class LikeEntity {
 
