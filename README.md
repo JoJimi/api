@@ -1,4 +1,3 @@
-# 연습
 - JWT
 - RestAPI
 - Exception
